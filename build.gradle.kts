@@ -7,6 +7,11 @@ plugins {
 group = "com.autoplanting"
 version = "2.0.0"
 
+val customBuildDir = findProperty("buildDir")?.toString()
+if (customBuildDir != null) {
+    buildDir = file(customBuildDir)
+}
+
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")

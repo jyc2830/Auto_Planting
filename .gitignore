@@ -1,9 +1,11 @@
-target/
-.gradle/
-build/
-**/build/
+/.gradle/
+/.gradle-user-home/
+/.gradle-project-cache/
+/.build-*/
+/build/
+/release/
+/target/
 .idea/
 .vscode/
 .agent/
 *.iml
-release/*.jar
