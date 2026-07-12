@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -30,7 +28,7 @@ public final class ReplantTaskRunner {
 
         Runnable task = () -> {
             Block block = location.getBlock();
-            if (!block.getType().isAir()) {
+            if (block.getType() != Material.AIR) {
                 return;
             }
 
@@ -39,12 +37,7 @@ public final class ReplantTaskRunner {
                 return;
             }
 
-            BlockData replanted = createReplantedData(cropType);
-            if (replanted == null) {
-                return;
-            }
-
-            block.setBlockData(replanted, false);
+            replant(block, cropType);
             offhand.setAmount(offhand.getAmount() - 1);
             if (offhand.getAmount() <= 0) {
                 player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
@@ -83,12 +76,25 @@ public final class ReplantTaskRunner {
         }
     }
 
-    private BlockData createReplantedData(Material cropType) {
-        BlockData blockData = Bukkit.createBlockData(cropType);
-        if (blockData instanceof Ageable ageable) {
-            ageable.setAge(0);
-            return ageable;
+    private void replant(Block block, Material cropType) {
+        try {
+            Method setType = block.getClass().getMethod("setType", Material.class);
+            setType.invoke(block, cropType);
+
+            Method getBlockData = block.getClass().getMethod("getBlockData");
+            Object data = getBlockData.invoke(block);
+            Class<?> ageableClass = Class.forName("org.bukkit.block.data.Ageable");
+            if (ageableClass.isInstance(data)) {
+                Method setAge = ageableClass.getMethod("setAge", int.class);
+                setAge.invoke(data, Integer.valueOf(0));
+                Class<?> blockDataClass = Class.forName("org.bukkit.block.data.BlockData");
+                Method setBlockData = block.getClass().getMethod("setBlockData", blockDataClass, boolean.class);
+                setBlockData.invoke(block, data, Boolean.FALSE);
+                return;
+            }
+        } catch (Throwable ignored) {
         }
-        return null;
+
+        block.setType(cropType);
     }
 }

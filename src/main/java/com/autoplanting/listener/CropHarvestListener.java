@@ -4,8 +4,6 @@ import com.autoplanting.util.CropUtils;
 import com.autoplanting.util.ReplantTaskRunner;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,12 +26,7 @@ public final class CropHarvestListener implements Listener {
             return;
         }
 
-        BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable ageable)) {
-            return;
-        }
-
-        if (ageable.getAge() < ageable.getMaximumAge()) {
+        if (!CropUtils.isMature(block)) {
             if (!event.getPlayer().isSneaking()) {
                 event.setCancelled(true);
             }

@@ -1,33 +1,85 @@
 package com.autoplanting.util;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.lang.reflect.Method;
 
 public final class CropUtils {
-    private static final Map<Material, Material> REPLANT_MATERIALS = new EnumMap<>(Material.class);
-
-    static {
-        REPLANT_MATERIALS.put(Material.WHEAT, Material.WHEAT_SEEDS);
-        REPLANT_MATERIALS.put(Material.CARROTS, Material.CARROT);
-        REPLANT_MATERIALS.put(Material.POTATOES, Material.POTATO);
-        REPLANT_MATERIALS.put(Material.BEETROOTS, Material.BEETROOT_SEEDS);
-        REPLANT_MATERIALS.put(Material.NETHER_WART, Material.NETHER_WART);
-    }
-
     private CropUtils() {
     }
 
     public static boolean isSupportedCrop(Material material) {
-        return REPLANT_MATERIALS.containsKey(material);
+        return material != null && getPlantingMaterial(material) != null;
     }
 
     public static Material getPlantingMaterial(Material crop) {
-        return REPLANT_MATERIALS.get(crop);
+        if (crop == null) {
+            return null;
+        }
+        String name = crop.name();
+        if ("WHEAT".equals(name) || "CROPS".equals(name)) {
+            return material("WHEAT_SEEDS", "SEEDS");
+        }
+        if ("CARROT".equals(name) || "CARROTS".equals(name)) {
+            return material("CARROT");
+        }
+        if ("POTATO".equals(name) || "POTATOES".equals(name)) {
+            return material("POTATO");
+        }
+        if ("BEETROOTS".equals(name) || "BEETROOT".equals(name) || "BEETROOT_BLOCK".equals(name)) {
+            return material("BEETROOT_SEEDS");
+        }
+        if ("NETHER_WART".equals(name) || "NETHER_WARTS".equals(name)) {
+            return material("NETHER_WART");
+        }
+        return null;
     }
 
-    public static boolean canReplant(Material crop, Material heldItem) {
-        return getPlantingMaterial(crop) == heldItem;
+    public static Material material(String... candidates) {
+        if (candidates == null) {
+            return null;
+        }
+        for (String candidate : candidates) {
+            Material material = Material.getMaterial(candidate);
+            if (material != null) {
+                return material;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isMature(Block block) {
+        if (block == null) {
+            return false;
+        }
+
+        try {
+            Method getBlockData = block.getClass().getMethod("getBlockData");
+            Object data = getBlockData.invoke(block);
+            Class<?> ageableClass = Class.forName("org.bukkit.block.data.Ageable");
+            if (ageableClass.isInstance(data)) {
+                Method getAge = ageableClass.getMethod("getAge");
+                Method getMaximumAge = ageableClass.getMethod("getMaximumAge");
+                return ((Integer) getAge.invoke(data)).intValue() >= ((Integer) getMaximumAge.invoke(data)).intValue();
+            }
+        } catch (Throwable ignored) {
+        }
+
+        byte data = block.getData();
+        String name = block.getType().name();
+        if ("CROPS".equals(name)) {
+            return data >= 7;
+        }
+        if ("CARROT".equals(name) || "POTATO".equals(name)) {
+            return data >= 7;
+        }
+        if ("BEETROOT_BLOCK".equals(name) || "BEETROOTS".equals(name)) {
+            return data >= 3;
+        }
+        if ("NETHER_WART".equals(name)) {
+            return data >= 3;
+        }
+        return true;
     }
 }
