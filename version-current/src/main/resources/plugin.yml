@@ -1,0 +1,7 @@
+name: AutoPlanting
+version: 2.0.0
+main: com.autoplanting.AutoPlantingPlugin
+api-version: '26.1.2'
+folia-supported: true
+author: Codex
+description: Auto replant mature crops when harvested with an offhand seed/item.
