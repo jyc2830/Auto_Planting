@@ -41,14 +41,31 @@ The root `releaseBuild` task:
 
 ## Support buckets
 
-- Legacy: `1.12.x ~ 1.16.5`
-- Modern: `1.17.x ~ 1.21.x`
-- Current: `26.1.x`
+| Bucket | Minecraft versions | Runtimes | Notes |
+| --- | --- | --- | --- |
+| Legacy | `1.12.x ~ 1.16.5` | CraftBukkit, Spigot, Paper | Use for older servers that still need pre-1.17 compatibility. |
+| Modern | `1.17.x ~ 1.21.x` | CraftBukkit, Spigot, Paper | Shared non-Folia build for the 1.17+ line. |
+| Current | `26.1.x` | CraftBukkit, Spigot, Paper, Folia | Folia-enabled build. Use this only on the current server generation. |
 
 ## Folia support
 
 Only the current distribution declares `folia-supported: true`.
 Scheduler dispatch is selected at runtime with platform detection and isolated Folia implementation loading.
+
+## Which jar to use
+
+- `1.12.x ~ 1.16.5` on CraftBukkit / Spigot / Paper:
+  - `release/AutoPlanting-2.0.0-legacy.jar`
+- `1.17.x ~ 1.21.x` on CraftBukkit / Spigot / Paper:
+  - `release/AutoPlanting-2.0.0-modern.jar`
+- `26.1.x` on CraftBukkit / Spigot / Paper / Folia:
+  - `release/AutoPlanting-2.0.0-current.jar`
+
+## Platform selection
+
+- Use the `Legacy` jar when you want the broadest backward compatibility.
+- Use the `Modern` jar when you target the 1.17+ Paper/Bukkit line and do not need Folia.
+- Use the `Current` jar when you are on the current Folia-capable generation.
 
 ## Adding adapters
 
