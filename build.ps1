@@ -73,6 +73,21 @@ function Invoke-Build {
     finally {
         $env:GRADLE_USER_HOME = $previousGradleUserHome
     }
+
+    Write-Host ""
+    if ($BuildInfo.Name -eq 'all') {
+        $releaseDir = Join-Path $root $buildDir 'release'
+        Write-Host "Output files:"
+        Get-ChildItem -Path $releaseDir -File -Filter '*.jar' | Sort-Object Name | ForEach-Object {
+            Write-Host "    $($_.FullName)"
+        }
+    }
+    else {
+        $artifactName = "AutoPlanting-2.0.0-$($BuildInfo.Name).jar"
+        $artifactPath = Join-Path (Join-Path $root $buildDir) (Join-Path 'release' $artifactName)
+        Write-Host "Output file:"
+        Write-Host "    $artifactPath"
+    }
 }
 
 function Select-Version {
@@ -103,12 +118,12 @@ function Select-Version {
 }
 
 if ($Version) {
-    $selected = $versions | Where-Object { $_.Name -ieq $Version }
+    $selected = @($versions | Where-Object { $_.Name -ieq $Version })
     if (-not $selected) {
         throw "Unknown version '$Version'. Available: $($versions.Name -join ', ')"
     }
 } else {
-    $selected = Select-Version -Options $versions
+    $selected = @(Select-Version -Options $versions)
 }
 
 if (-not $selected) {
@@ -116,4 +131,4 @@ if (-not $selected) {
     exit 0
 }
 
-Invoke-Build -BuildInfo $selected
+Invoke-Build -BuildInfo ($selected[0])
