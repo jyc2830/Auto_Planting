@@ -1,12 +1,12 @@
 # Auto Planting
 
-자동 작물 재식재 플러그인입니다.
+Automatic crop replanting for Minecraft servers.
 
 ## Features
 
-- 성숙한 작물을 수확하면 왼손의 씨앗/작물을 소비해 자동 재식재
-- 미성숙 작물은 기본적으로 파괴를 막고, `Shift` 상태에서만 파괴 허용
-- Bukkit, Paper, Folia 계열에 맞는 배포 JAR 제공
+- Replants mature crops automatically when the matching item is in the offhand
+- Prevents immature crops from breaking unless the player is sneaking
+- Provides separate release jars for legacy, modern, and current server lines
 
 ## Downloads
 
@@ -21,7 +21,7 @@
 - Paper
 - Folia
 
-## Support matrix
+## Compatibility
 
 | Jar | Minecraft versions | Runtime |
 | --- | --- | --- |
